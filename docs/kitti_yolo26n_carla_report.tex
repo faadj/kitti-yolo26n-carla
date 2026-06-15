@@ -1,0 +1,658 @@
+% ============================================================
+% HW5 - Object Detection in Self-Driving Cars
+% Fahad Ali Jalil | Universitat Klagenfurt | Summer 2026
+% ============================================================
+% To embed videos, compile with pdflatex.
+% Required packages: media9 (for .avi embedding) or animate (for GIF)
+% If media9 is unavailable, the fallback contact sheet images are shown.
+% Compile command: pdflatex -shell-escape HW5_fahadjalil_kitti_yolo26.tex
+% ============================================================
+
+\documentclass[12pt, a4paper]{article}
+
+% ── Packages ────────────────────────────────────────────────────────────────
+\usepackage[a4paper, top=2.5cm, bottom=2.5cm, left=2.5cm, right=2.5cm]{geometry}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{longtable}
+\usepackage{xcolor}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{parskip}
+\usepackage{microtype}
+\usepackage{hyperref}
+\usepackage{caption}
+\usepackage{float}
+\usepackage{tcolorbox}
+\usepackage{fontenc}
+\usepackage{inputenc}
+\usepackage{lmodern}
+\usepackage{setspace}
+\usepackage{ragged2e}
+
+% Video embedding — uses media9 for .avi, animate for GIFs
+% Comment out if not installed and use fallback images instead
+\usepackage{media9}
+\usepackage{animate}
+
+% ── Colours ──────────────────────────────────────────────────────────────────
+\definecolor{darkblue}{HTML}{1a1a2e}
+\definecolor{midblue}{HTML}{2c6b9e}
+\definecolor{lightblue}{HTML}{ddeaf5}
+\definecolor{annbg}{HTML}{eef2ff}
+\definecolor{tablehead}{HTML}{1a1a2e}
+\definecolor{tablerow1}{HTML}{f0f4ff}
+
+% ── Section formatting ────────────────────────────────────────────────────────
+\titleformat{\section}
+  {\Large\bfseries\color{darkblue}}
+  {\thesection.}{0.5em}{}
+  [\color{midblue}\titlerule]
+
+\titleformat{\subsection}
+  {\normalsize\bfseries\color{midblue}}
+  {\thesubsection}{0.5em}{}
+
+\titlespacing{\section}{0pt}{14pt}{6pt}
+\titlespacing{\subsection}{0pt}{10pt}{4pt}
+
+% ── Annotation box ────────────────────────────────────────────────────────────
+\tcbuselibrary{skins}
+\newenvironment{annbox}{%
+  \begin{tcolorbox}[
+    colback=annbg,
+    colframe=midblue,
+    boxrule=0.5pt,
+    arc=2pt,
+    left=6pt, right=6pt, top=5pt, bottom=5pt,
+    fontupper=\small\color{darkblue}
+  ]
+}{%
+  \end{tcolorbox}
+}
+
+% ── Table styling ─────────────────────────────────────────────────────────────
+\newcolumntype{L}[1]{>{\RaggedRight\arraybackslash}p{#1}}
+\newcolumntype{C}[1]{>{\Centering\arraybackslash}p{#1}}
+
+% Header row colour
+\newcommand{\hdrrow}{\rowcolor{tablehead}\color{white}\bfseries}
+
+% Alternating row colours
+\usepackage{colortbl}
+\newcommand{\rowA}{\rowcolor{tablerow1}}
+\newcommand{\rowB}{\rowcolor{white}}
+
+% ── Header and footer ─────────────────────────────────────────────────────────
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+
+\fancyhead[L]{%
+  \includegraphics[height=0.65cm]{images/logo_white.png}%
+}
+\fancyhead[R]{\small\color{gray} LAB on Autonomous Driving Cars \ | \ Fahad Ali Jalil}
+\fancyfoot[L]{\small\color{gray} Universitat Klagenfurt \ | \ Summer 2026}
+\fancyfoot[R]{\small\color{gray} Page \thepage}
+
+% Blue rule under header
+\renewcommand{\headrule}{{\color{midblue}\hrule width\headwidth height 1.2pt}}
+% Blue rule above footer
+\renewcommand{\footrule}{{\color{midblue}\hrule width\headwidth height 1.2pt}}
+
+% ── Hyperlink setup ───────────────────────────────────────────────────────────
+\hypersetup{
+  colorlinks=true,
+  linkcolor=midblue,
+  urlcolor=midblue,
+  pdftitle={HW5 - Object Detection in Self-Driving Cars},
+  pdfauthor={Fahad Ali Jalil}
+}
+
+% ── Caption style ─────────────────────────────────────────────────────────────
+\captionsetup{
+  font=small,
+  labelfont=it,
+  textfont=it,
+  justification=centering,
+  skip=4pt
+}
+
+% ─────────────────────────────────────────────────────────────────────────────
+\begin{document}
+
+% ── COVER PAGE ───────────────────────────────────────────────────────────────
+\thispagestyle{fancy}
+\vspace*{2cm}
+
+\begin{center}
+  \includegraphics[width=7cm]{images/logo_white.png}\\[1.2cm]
+  {\normalsize Homework 5}\\[0.3cm]
+  {\LARGE\bfseries\color{darkblue}
+    Object Detection in Self-Driving Cars\\
+    using Python and Neural Networks}\\[0.5cm]
+  {\color{midblue}\rule{\textwidth}{1.5pt}}
+\end{center}
+
+\vspace{0.6cm}
+
+\begin{tabular}{@{}L{3.5cm} L{10cm}@{}}
+  \textbf{Student}    & Fahad Ali Jalil \\[4pt]
+  \textbf{Student ID} & 12502261 \\[4pt]
+  \textbf{Course}     & LAB on Autonomous Driving Cars (700.385 / 700.386) \\[4pt]
+  \textbf{Supervisor} & Dipl.-Ing. Mohamed Salem \\[4pt]
+  \textbf{University} & Universitat Klagenfurt \\[4pt]
+  \textbf{Dataset}    & KITTI 2D Object Detection \\[4pt]
+  \textbf{Model}      & YOLO26n (Ultralytics, January 2026) \\[4pt]
+  \textbf{Deadline}   & 15.06.2026 \\
+\end{tabular}
+
+\newpage
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Task Description}
+
+The objective of Homework 5 is to implement an end-to-end object detection pipeline for autonomous
+driving using Python and deep learning. The task requires selecting a dataset, preprocessing it,
+choosing and implementing a neural network architecture, training the model, evaluating performance
+on a validation set, and visualising detection results on sample images.
+
+\vspace{0.3cm}
+\begin{tabular}{@{} C{1.2cm} L{12.5cm} @{}}
+  \hdrrow Step & \hdrrow Requirement \\
+  \rowA 1 & Choose a well-known dataset: CityScapes, KITTI, or similar \\
+  \rowB 2 & Preprocess: resize images, normalise pixels, handle annotations, split train/val \\
+  \rowA 3 & Choose an architecture: Faster R-CNN, YOLO, or SSD \\
+  \rowB 4 & Implement using Python and a deep learning framework \\
+  \rowA 5 & Train the model and evaluate on the validation set \\
+  \rowB 6 & Visualise bounding box detections on sample images \\
+\end{tabular}
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Approach}
+
+The Ultralytics YOLO26 framework was selected. YOLO26n (January 2026) is the latest YOLO
+generation featuring a fully end-to-end NMS-free architecture. All six homework requirements are
+satisfied.
+
+\vspace{0.3cm}
+\begin{tabular}{@{} L{4.5cm} L{9.2cm} @{}}
+  \hdrrow Homework Step & \hdrrow How it is fulfilled \\
+  \rowA Dataset           & KITTI downloaded automatically via kitti.yaml (390.5 MB) \\
+  \rowB Resize images     & All images resized to 640$\times$640 pixels during data loading \\
+  \rowA Normalise pixels  & Pixel values scaled from 0--255 to 0.0--1.0 by the dataloader \\
+  \rowB Annotations       & kitti.yaml maps each label file to its corresponding image \\
+  \rowA Train/val split   & 5,985 training images and 1,496 validation images \\
+  \rowB Architecture      & YOLO26n: 260 layers, 2,506,920 parameters, 5.8 GFLOPs \\
+  \rowA Loss function     & box\_loss + cls\_loss + dfl\_loss (computed each epoch) \\
+  \rowB Training pipeline & model.train() with AdamW optimizer, 10 epochs, batch size 16 \\
+  \rowA Evaluation        & mAP50 and mAP50-95 computed on 1,496 validation images \\
+  \rowB Visualisation     & model.predict() with save=True draws boxes on sample images \\
+\end{tabular}
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Dataset: KITTI}
+
+The KITTI Vision Benchmark Suite contains real-world driving scenes collected in Karlsruhe, Germany.
+It contains 8 annotated object classes covering all road users encountered in urban and highway driving.
+
+\vspace{0.3cm}
+\begin{tabular}{@{} L{4.5cm} L{9.2cm} @{}}
+  \hdrrow Property & \hdrrow Value \\
+  \rowA Total images      & 7,481 \\
+  \rowB Training images   & 5,985 \\
+  \rowA Validation images & 1,496 \\
+  \rowB Input resolution  & Variable original, resized to 640$\times$640 for training \\
+  \rowA Download size     & 390.5 MB \\
+  \rowB Classes           & car, van, truck, pedestrian, person\_sitting, cyclist, tram, misc \\
+  \rowA Source            & Geiger et al., IJRR 2013 \\
+\end{tabular}
+
+\vspace{0.4cm}
+\subsection{Figure 1: Class Distribution (Training Set)}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.65\textwidth]{images/label_bar_only.png}
+  \caption{Annotation count per class in the KITTI training set.}
+\end{figure}
+
+\begin{annbox}
+Car dominates with 23,026 annotations out of $\sim$32,437 total (71\%). Rare classes such as
+person\_sitting (186) and tram (394) are underrepresented, explaining their lower detection accuracy
+in Section 6. Box centres cluster at y=0.5--0.6 (lower half of frame), consistent with road-level
+objects in a forward-facing camera.
+\end{annbox}
+
+\newpage
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Model: YOLO26n}
+
+YOLO26n is the nano (smallest) variant of YOLO26, pre-trained on COCO (80 classes) and fine-tuned
+on KITTI (8 classes). It outputs up to 300 detections per image without requiring NMS post-processing.
+
+\vspace{0.3cm}
+\begin{tabular}{@{} L{4.5cm} L{9.2cm} @{}}
+  \hdrrow Property & \hdrrow Value \\
+  \rowA Layers          & 260 \\
+  \rowB Parameters      & 2,506,920 \\
+  \rowA GFLOPs          & 5.8 \\
+  \rowB Input size      & 640$\times$640 pixels \\
+  \rowA Output          & (1, 300, 6) --- NMS-free, max 300 detections per image \\
+  \rowB Pretrained on   & COCO dataset (80 classes) \\
+  \rowA Fine-tuned on   & KITTI dataset (8 classes) \\
+  \rowB Optimizer       & AdamW (lr=0.000833, momentum=0.9, weight decay=0.0005) \\
+  \rowA GPU             & Tesla T4, 14,913 MiB --- Google Colab \\
+\end{tabular}
+
+\vspace{0.3cm}
+\begin{tabular}{@{} L{2.5cm} L{4.0cm} L{7.2cm} @{}}
+  \hdrrow Loss & \hdrrow Full Name & \hdrrow What it penalises \\
+  \rowA box\_loss & Bounding Box Loss       & Distance between predicted and ground-truth box coordinates \\
+  \rowB cls\_loss & Classification Loss     & Error in predicting the correct class label \\
+  \rowA dfl\_loss & Distribution Focal Loss & Precision of predicted box edge positions \\
+\end{tabular}
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Training Progress}
+
+The model was trained for 10 epochs on a Tesla T4 GPU. All loss values decrease consistently and
+mAP50 improves from approximately 0.19 at epoch 1 to 0.653 at epoch 10.
+
+\vspace{0.3cm}
+\begin{tabular}{@{} C{1.5cm} C{1.8cm} C{1.8cm} C{1.8cm} C{1.8cm} C{1.8cm} C{2cm} @{}}
+  \hdrrow Epoch & \hdrrow GPU Mem & \hdrrow box\_loss & \hdrrow cls\_loss & \hdrrow dfl\_loss & \hdrrow mAP50 & \hdrrow mAP50-95 \\
+  \rowA 1/10  & 2.44G & 1.767 & 4.703 & 0.006 & $\sim$0.19 & $\sim$0.14 \\
+  \rowB 8/10  & 2.34G & 1.083 & 0.788 & 0.998 & 0.613 & 0.385 \\
+  \rowA 9/10  & 2.36G & 1.044 & 0.744 & 0.985 & 0.622 & 0.391 \\
+  \rowB 10/10 & 2.36G & 1.010 & 0.710 & 0.971 & 0.653 & 0.421 \\
+\end{tabular}
+
+\vspace{0.4cm}
+\subsection{Figure 2: Training and Validation Losses and Metrics}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{images/training.png}
+  \caption{Top row: training losses and validation precision/recall across 10 epochs.
+           Bottom row: validation losses and mAP scores.}
+\end{figure}
+
+\begin{annbox}
+box\_loss drops from 1.77 to 1.30 --- localisation improves steadily. cls\_loss drops sharply from 4.0
+to 1.0 in the first 4 epochs --- class recognition learned quickly. mAP50 and mAP50-95 trend upward
+with no sign of overfitting within 10 epochs, indicating further improvement with additional training.
+\end{annbox}
+
+\newpage
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Evaluation Results}
+
+The best checkpoint was evaluated on 1,496 validation images across all 8 KITTI classes.
+
+\vspace{0.3cm}
+\begin{tabular}{@{} L{3.0cm} C{1.5cm} C{1.8cm} C{2.0cm} C{1.6cm} C{1.6cm} C{1.8cm} @{}}
+  \hdrrow Class & \hdrrow Images & \hdrrow Instances & \hdrrow Precision & \hdrrow Recall & \hdrrow mAP50 & \hdrrow mAP50-95 \\
+  \rowA ALL (overall)  & 1496 & 8128 & 0.727 & 0.571 & 0.653 & 0.422 \\
+  \rowB car            & 1322 & 5716 & 0.882 & 0.818 & 0.902 & 0.661 \\
+  \rowA van            & 419  & 555  & 0.819 & 0.589 & 0.720 & 0.517 \\
+  \rowB truck          & 212  & 223  & 0.939 & 0.763 & 0.852 & 0.656 \\
+  \rowA pedestrian     & 377  & 921  & 0.693 & 0.481 & 0.578 & 0.283 \\
+  \rowB person\_sitting & 17  & 36   & 0.425 & 0.361 & 0.414 & 0.206 \\
+  \rowA cyclist        & 252  & 352  & 0.633 & 0.484 & 0.526 & 0.269 \\
+  \rowB tram           & 77   & 117  & 0.684 & 0.658 & 0.757 & 0.474 \\
+  \rowA misc           & 158  & 208  & 0.741 & 0.412 & 0.475 & 0.310 \\
+\end{tabular}
+
+\vspace{0.4cm}
+\subsection{Figure 3: Confusion Matrix (Raw Counts)}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.85\textwidth]{images/cm.png}
+  \caption{Raw confusion matrix. Rows = predicted class, columns = true class. Background row = missed objects.}
+\end{figure}
+
+\begin{annbox}
+Car: 4,362 correct detections out of 5,716 --- strongest performer. 1,326 cars missed (background row),
+mainly small or distant vehicles. Pedestrian: 548 missed --- small objects at driving range are harder to detect.
+Person\_sitting and cyclist frequently missed due to low training count and small visual size.
+\end{annbox}
+
+\vspace{0.3cm}
+\subsection{Figure 4: Confusion Matrix (Normalised)}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.85\textwidth]{images/cm_norm.png}
+  \caption{Normalised confusion matrix --- fraction of ground-truth instances predicted as each class.}
+\end{figure}
+
+\begin{annbox}
+Car: 0.76 true positive rate. Truck: 0.68. Van: 0.50 --- frequently confused with car (0.09) due to
+visual similarity. Pedestrian: 0.39 --- 60\% missed as background at driving distances.
+Person\_sitting: 0.31 --- hardest class with only 36 validation instances.
+\end{annbox}
+
+\newpage
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Bounding Box Visualisation on Sample Images}
+
+The trained model was applied to 6 images: one fixed test image and 5 randomly selected KITTI
+validation images (random seed 42). All detection images are 1242$\times$375 pixels.
+
+\subsection{Sample 1: Urban Street --- Fixed Test Image}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{images/det1.png}
+  \caption{Sample 1: Dense urban street --- 12 cars and 1 truck detected.}
+\end{figure}
+\begin{annbox}
+12 cars detected (confidence 0.26--0.97) and 1 truck (0.65). Large nearby cars on both edges detected
+at high confidence (0.89, 0.88). Multiple overlapping cars in the centre are individually separated.
+Partially visible car on far left detected at 0.26 --- expected for a heavily occluded object.
+\end{annbox}
+
+\subsection{Sample 2: Quiet Residential Street}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{images/det2.png}
+  \caption{Sample 2: Quiet residential street --- 1 car detected at a distance (confidence 0.88).}
+\end{figure}
+\begin{annbox}
+1 car detected at 0.88 confidence at significant distance down the road. Scene contains many
+distractors --- hedges, fences, lamp posts --- yet the model identifies the single vehicle correctly
+and produces zero false positives.
+\end{annbox}
+
+\subsection{Sample 3: Residential Parking Area}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{images/det3.png}
+  \caption{Sample 3: Residential parking area --- 5 cars detected.}
+\end{figure}
+\begin{annbox}
+5 cars: 0.46 (left edge, partially cut off), 0.71 (white parked car), 0.95 (blue car in foreground),
+0.95 (dark car right-centre), 0.95 (partially visible far right). Truncated frame-edge car scores
+lower (0.46) as expected.
+\end{annbox}
+
+\newpage
+
+\subsection{Sample 4: Tree-Lined Suburban Road}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{images/det4.png}
+  \caption{Sample 4: Tree-lined suburban road --- 2 cars detected at high confidence.}
+\end{figure}
+\begin{annbox}
+Silver estate car on the left (0.88) and dark car ahead on the road (0.94). Distant dark car is small
+in frame but detected at 0.94 --- confirming correct detection at driving distances. Tram tracks on
+the right produce no false detections.
+\end{annbox}
+
+\subsection{Sample 5: Rural Highway with Oncoming Traffic}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{images/det5.png}
+  \caption{Sample 5: Rural highway --- 4 cars detected, tram warning sign correctly ignored.}
+\end{figure}
+\begin{annbox}
+4 cars: partially visible dark car at left edge (0.91), red car beside railway (0.89), blue car ahead
+(0.95), black car immediately ahead (0.92). All scores above 0.89. Tram-crossing warning sign is
+correctly not detected --- road signs are not a KITTI class.
+\end{annbox}
+
+\subsection{Sample 6: Narrow Cobblestone Street}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{images/det6.png}
+  \caption{Sample 6: Narrow cobblestone street --- 4 cars detected in tight cluster.}
+\end{figure}
+\begin{annbox}
+4 cars in right half: 0.95, 0.82, 0.51, 0.95. Fifth car at far right edge at 0.76. Three tightly
+clustered cars around garage entrance individually distinguished. Large empty left half of frame
+(metal fence, building wall) produces zero false positives.
+\end{annbox}
+
+\newpage
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Model Export}
+
+The trained model was exported to ONNX format for deployment on any hardware without requiring PyTorch.
+
+\vspace{0.3cm}
+\begin{tabular}{@{} L{4.5cm} L{9.2cm} @{}}
+  \hdrrow Property & \hdrrow Value \\
+  \rowA Format       & ONNX (Open Neural Network Exchange) \\
+  \rowB File size    & 9.4 MB \\
+  \rowA ONNX opset   & 17 (re-exported for Python 3.7 compatibility) \\
+  \rowB Input shape  & (1, 3, 640, 640) \\
+  \rowA Output shape & (1, 300, 6) --- up to 300 detections per image \\
+  \rowB Saved to     & /home/fahad/carla\_0.9.11/kitti\_yolo26n/best.onnx \\
+\end{tabular}
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Model Training Summary}
+
+After 10 epochs the best checkpoint achieved overall mAP50 of 0.653 on the KITTI validation set.
+Performance is strongest for large, frequent classes --- car (0.902), truck (0.852), van (0.720) ---
+and lower for rare, small classes --- person\_sitting (0.414), cyclist (0.526). Inference runs at
+approximately 13 ms per image on a T4 GPU, suitable for real-time deployment.
+
+\newpage
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{CARLA Simulation with Live YOLO26n Detection}
+
+After successfully training and evaluating the YOLO26n model on the KITTI dataset, the trained model
+was tested inside CARLA (Car Learning to Act) --- an open-source autonomous driving simulator. CARLA
+generates realistic camera images from a virtual vehicle, making it a natural environment to verify
+whether a model trained on real photos can also detect objects in a simulated world.
+
+\subsection{Approach and Thought Process}
+
+The idea is straightforward: mount a virtual camera on a manually driven vehicle in CARLA, feed every
+camera frame into the trained YOLO26n model, and draw bounding boxes around detected objects in real
+time. This tests \textit{domain transfer} --- whether a model trained on real German driving photos
+(KITTI) can detect objects in a simulated world.
+
+A separate Python script was created for this task: \texttt{carla\_yolo26\_detection.py}. This script
+connects to the CARLA server, spawns the player vehicle and NPC traffic, attaches a camera sensor,
+runs YOLO26n inference on each frame, draws detections on the live feed, and saves video recordings
+on demand using the R key.
+
+A key technical challenge was that the trained model requires Python 3.8+ while CARLA 0.9.11 only
+provides a Python 3.7 API. The solution was to export the model to ONNX format --- a universal format
+loadable by any Python version via \texttt{onnxruntime} --- allowing the full pipeline to run in
+Python 3.7 alongside CARLA with no version conflicts.
+
+\subsection{Implementation Steps}
+
+\vspace{0.2cm}
+\begin{tabular}{@{} C{0.8cm} L{13cm} @{}}
+  \hdrrow Step & \hdrrow What was done \\
+  \rowA 1 & Trained model exported to ONNX format (opset 17) for Python 3.7 compatibility \\
+  \rowB 2 & Conda environment carla37 set up with Python 3.7, CARLA egg, onnxruntime, opencv \\
+  \rowA 3 & carla\_yolo26\_detection.py written with CARLA connection, camera, NPC, detection, recording \\
+  \rowB 4 & CARLA launched with \texttt{-quality-level=Low} to reduce GPU load on integrated Intel Iris Xe GPU \\
+  \rowA 5 & Town03 loaded with 15 NPC vehicles and 6 pedestrian walkers \\
+  \rowB 6 & Vehicle driven manually with W/A/S/D, live detections shown on camera window \\
+  \rowA 7 & R key used to record sessions --- saved as timestamped .avi files \\
+\end{tabular}
+
+\subsection{Figure 8: CARLA Launch --- Low Quality Mode}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{images/carla_low.png}
+  \caption{CARLA 0.9.11 launched with \texttt{-quality-level=Low} flag to reduce GPU and memory usage.}
+\end{figure}
+\begin{annbox}
+CARLA launched using \texttt{-quality-level=Low} which reduces texture resolution, shadow quality, and
+post-processing. Necessary because the test machine uses an integrated Intel Iris Xe GPU with shared
+memory rather than a dedicated GPU.
+\end{annbox}
+
+\subsection{Figure 9: Successful Connection and Environment Load}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.9\textwidth]{images/carla_env.png}
+  \caption{Terminal output confirming CARLA connected, Town03 loaded, vehicle and camera spawned.}
+\end{figure}
+\begin{annbox}
+The script connected to CARLA at localhost:2000, loaded Town03, spawned the player vehicle (Tesla
+Model 3), attached the RGB camera at 800$\times$600, and spawned 15 NPC vehicles and 6 walkers. Font
+warnings in the terminal are harmless Qt messages that do not affect the simulation.
+\end{annbox}
+
+\subsection{Figure 10: Live Detection Window Running in CARLA}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{images/carla_running.png}
+  \caption{Live YOLO26n detection window showing CARLA camera feed with bounding boxes.}
+\end{figure}
+\begin{annbox}
+The detection window shows the forward-facing camera view from the player vehicle in Town03. Speed and
+gear indicator appear top-left. Controls shown at the bottom. The model runs ONNX inference on every
+frame and draws colour-coded boxes: green for cars, red for pedestrians, yellow for cyclists. The REC
+indicator appears top-right when recording is active.
+\end{annbox}
+
+\newpage
+
+\subsection{Domain Gap Observation}
+
+The model was trained on real KITTI photographs from Karlsruhe, Germany. CARLA generates synthetic
+images rendered by a game engine --- this visual difference is called the \textit{domain gap}. In
+practice the model still detects cars and pedestrians in CARLA, but with slightly lower confidence
+scores than on real KITTI images. This is a known and expected challenge in autonomous driving research.
+
+\subsection{Recorded Driving Sessions}
+
+Two driving sessions were recorded using the R key toggle. Three representative frames from each
+session are shown below. The full video files can be played directly in this PDF using the embedded
+player below each contact sheet (requires Adobe Acrobat or a compatible PDF reader).
+
+% ── RECORDING 1 ──────────────────────────────────────────────────────────────
+\vspace{0.3cm}
+\subsubsection*{Recording 1 --- carla\_yolo26n\_20260614\_152239.avi (3.5 seconds)}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{images/gif1_sheet.png}
+  \caption{Recording 1: Three frames sampled from the first driving session (beginning, middle, end).}
+\end{figure}
+
+\begin{annbox}
+First recording session --- 3.5 second clip, 35 frames at 20 FPS, resolution 800$\times$600. Shows
+the initial moments of the driving session in Town03. YOLO26n detects road objects frame by frame with
+colour-coded bounding boxes.
+\end{annbox}
+
+\vspace{0.3cm}
+% Embedded video --- requires Adobe Acrobat to play
+% If media9 is not available, comment out the includemedia block below
+\begin{center}
+\includemedia[
+  width=0.85\textwidth,
+  height=0.4\textwidth,
+  activate=pageopen,
+  passcontext,
+  addresource=images/carla_yolo26n_20260614_152239.avi,
+  flashvars={
+    source=images/carla_yolo26n_20260614_152239.avi
+    &autoPlay=false
+    &loop=true
+  }
+]{%
+  \includegraphics[width=0.85\textwidth]{images/gif1_sheet.png}
+}{VPlayer.swf}
+\end{center}
+
+\vspace{0.2cm}
+\begin{center}
+  \small\textit{$\blacktriangleright$ Click to play Recording 1 (requires Adobe Acrobat Reader)}
+\end{center}
+
+\newpage
+
+% ── RECORDING 2 ──────────────────────────────────────────────────────────────
+\subsubsection*{Recording 2 --- carla\_yolo26n\_20260614\_152530.avi (27 seconds)}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{images/gif2_sheet.png}
+  \caption{Recording 2: Three frames sampled from the second driving session (beginning, middle, end).}
+\end{figure}
+
+\begin{annbox}
+Second recording session --- 27 second clip, 539 frames at 20 FPS, resolution 800$\times$600. Longer
+driving sequence through Town03 with NPC vehicles and pedestrians present. Green boxes show detected
+cars, red boxes show detected pedestrians. Confidence scores are shown above each bounding box.
+\end{annbox}
+
+\vspace{0.3cm}
+% Embedded video --- requires Adobe Acrobat to play
+\begin{center}
+\includemedia[
+  width=0.85\textwidth,
+  height=0.4\textwidth,
+  activate=pageopen,
+  passcontext,
+  addresource=images/carla_yolo26n_20260614_152530.avi,
+  flashvars={
+    source=images/carla_yolo26n_20260614_152530.avi
+    &autoPlay=false
+    &loop=true
+  }
+]{%
+  \includegraphics[width=0.85\textwidth]{images/gif2_sheet.png}
+}{VPlayer.swf}
+\end{center}
+
+\vspace{0.2cm}
+\begin{center}
+  \small\textit{$\blacktriangleright$ Click to play Recording 2 (requires Adobe Acrobat Reader)}
+\end{center}
+
+\newpage
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Conclusion}
+
+This homework implemented a complete object detection pipeline for autonomous driving using YOLO26n
+fine-tuned on the KITTI dataset. All six homework requirements were fulfilled. After 10 epochs on a
+Google Colab T4 GPU, the model achieved an overall mAP50 of 0.653, with car reaching 0.902, truck
+0.852, and van 0.720. The model was then successfully deployed inside the CARLA simulator where it
+detected vehicles and pedestrians in real time on a manually driven vehicle --- demonstrating practical
+applicability beyond static dataset evaluation. A separate Python script handles the full CARLA
+integration pipeline including ONNX inference, live HUD overlay, and video recording. Two driving
+sessions were recorded as documentation.
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section*{References}
+\addcontentsline{toc}{section}{References}
+
+\begin{enumerate}
+  \item Geiger, A., Lenz, P., Stiller, C., and Urtasun, R. (2013). Vision meets Robotics: The KITTI
+        Dataset. \textit{International Journal of Robotics Research (IJRR)}.
+  \item Jocher, G., and Qiu, J. (2026). Ultralytics YOLO26: Unified Real-Time End-to-End Vision
+        Models. \textit{arXiv:2606.03748}.
+  \item Dosovitskiy, A. et al. (2017). CARLA: An Open Urban Driving Simulator. \textit{CoRL 2017}.
+  \item Ultralytics YOLO26 Documentation.
+        \url{https://docs.ultralytics.com/models/yolo26/}
+  \item KITTI Dataset on Ultralytics Docs.
+        \url{https://docs.ultralytics.com/datasets/detect/kitti/}
+\end{enumerate}
+
+\end{document}

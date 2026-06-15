@@ -1,0 +1,11 @@
+# Training environment (Python 3.10+ | Google Colab recommended)
+ultralytics>=8.4.67
+torch>=2.0.0
+opencv-python>=4.8.0
+numpy>=1.23.0
+
+# CARLA simulation environment (Python 3.7 — carla37 conda env)
+# Install CARLA egg manually: carla-0.9.11-py3.7-linux-x86_64.egg
+onnxruntime>=1.14.0
+opencv-python>=4.5.0
+numpy>=1.21.0

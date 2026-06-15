@@ -1,0 +1,29 @@
+# Model weights (too large for GitHub — use Git LFS or share separately)
+*.pt
+*.onnx
+*.engine
+
+# Datasets
+datasets/
+*.zip
+
+# Training runs
+runs/
+
+# Video recordings
+*.avi
+carla_recordings/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.env
+*.egg-info/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# OS
+.DS_Store
+Thumbs.db
