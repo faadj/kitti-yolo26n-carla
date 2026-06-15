@@ -17,11 +17,11 @@
 
 ## What this project does
 
-We trained **YOLO26n** — the latest generation of the YOLO family, released January 2026 — on the **KITTI 2D Object Detection** dataset. After training, the model was exported to ONNX and deployed live inside the **CARLA autonomous driving simulator**, where it detects cars, pedestrians, cyclists, trucks, and other road users in real time from a moving vehicle's camera feed.
+We trained **YOLO26n** — the latest generation of the YOLO family, released January 2026 on the **KITTI 2D Object Detection** dataset. After training, the model was exported to ONNX and deployed live inside the **CARLA autonomous driving simulator**, where it detects cars, pedestrians, cyclists, trucks, and other road users in real time from a moving vehicle's camera feed.
 
 Two key ideas demonstrated here:
 
-- **Training a state-of-the-art detector on real driving data** — KITTI: 7,481 real-world German street images across 8 object classes
+- **Training a state-of-the-art detector on real driving data** KITTI: 7,481 real-world German street images across 8 object classes
 - **Sim deployment** — testing whether a model trained on real photos generalises to synthetic CARLA scenes (domain transfer)
 
 ---
