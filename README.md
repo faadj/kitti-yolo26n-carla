@@ -17,12 +17,12 @@
 
 ## What this project does
 
-We trained **YOLO26n** — the latest generation of the YOLO family, released January 2026 on the **KITTI 2D Object Detection** dataset. After training, the model was exported to ONNX and deployed live inside the **CARLA autonomous driving simulator**, where it detects cars, pedestrians, cyclists, trucks, and other road users in real time from a moving vehicle's camera feed.
+We trained **YOLO26n**  the latest generation of the YOLO family, released January 2026 on the **KITTI 2D Object Detection** dataset. After training, the model was exported to ONNX and deployed live inside the **CARLA autonomous driving simulator**, where it detects cars, pedestrians, cyclists, trucks, and other road users in real time from a moving vehicle's camera feed.
 
 Two key ideas demonstrated here:
 
 - **Training a state-of-the-art detector on real driving data** KITTI: 7,481 real-world German street images across 8 object classes
-- **Sim deployment** — testing whether a model trained on real photos generalises to synthetic CARLA scenes (domain transfer)
+- **Sim deployment**  testing whether a model trained on real photos generalises to synthetic CARLA scenes (domain transfer)
 
 ---
 
@@ -37,7 +37,7 @@ Two key ideas demonstrated here:
 </p>
 
 <p align="center">
-  <em>YOLO26n ONNX inference on every camera frame — Town03, manually driven vehicle</em>
+  <em>YOLO26n ONNX inference on every camera frame  Town03, manually driven vehicle</em>
 </p>
 
 ---
@@ -45,22 +45,22 @@ Two key ideas demonstrated here:
 ## Detection Results on KITTI
 
 <p align="center">
-  <img src="assets/results/det1.png" width="100%" alt="Urban street — 12 cars and 1 truck"/>
+  <img src="assets/results/det1.png" width="100%" alt="Urban street  12 cars and 1 truck"/>
   <br><em>Urban street: 12 cars and 1 truck detected (confidence 0.26–0.97)</em>
 </p>
 
 <p align="center">
-  <img src="assets/results/det5.png" width="100%" alt="Rural highway — 4 cars"/>
-  <br><em>Rural highway: 4 cars detected — tram warning sign correctly ignored</em>
+  <img src="assets/results/det5.png" width="100%" alt="Rural highway  4 cars"/>
+  <br><em>Rural highway: 4 cars detected  tram warning sign correctly ignored</em>
 </p>
 
 <p align="center">
-  <img src="assets/results/det2.png" width="100%" alt="Residential street — 1 distant car"/>
+  <img src="assets/results/det2.png" width="100%" alt="Residential street  1 distant car"/>
   <br><em>Quiet residential street: 1 car at distance correctly detected, zero false positives</em>
 </p>
 
 <p align="center">
-  <img src="assets/results/det4.png" width="100%" alt="Tree-lined road — 2 cars"/>
+  <img src="assets/results/det4.png" width="100%" alt="Tree-lined road  2 cars"/>
   <br><em>Tree-lined suburban road: 2 cars at different distances</em>
 </p>
 
@@ -88,7 +88,7 @@ Two key ideas demonstrated here:
 | person_sitting | 0.414 | 0.206 | 0.425 | 0.361 |
 | misc | 0.475 | 0.310 | 0.741 | 0.412 |
 
-> Car, truck, and van score highest — large, well-represented classes. Pedestrian and cyclist score lower due to small visual size at driving distances and fewer training samples.
+> Car, truck, and van score highest  large, well-represented classes. Pedestrian and cyclist score lower due to small visual size at driving distances and fewer training samples.
 
 ### Confusion Matrix
 
@@ -102,7 +102,7 @@ Two key ideas demonstrated here:
 
 <p align="center">
   <img src="assets/metrics/label_bar_only.png" width="65%" alt="Class distribution"/>
-  <br><em>Annotation count per class — car dominates with 23,026 instances (71% of all annotations)</em>
+  <br><em>Annotation count per class  car dominates with 23,026 instances (71% of all annotations)</em>
 </p>
 
 | Property | Value |
@@ -113,13 +113,13 @@ Two key ideas demonstrated here:
 | Classes | car, van, truck, pedestrian, person_sitting, cyclist, tram, misc |
 | Image resolution | Variable (resized to 640×640 for training) |
 | Download size | 390.5 MB (via Ultralytics auto-download) |
-| Source | Geiger et al., IJRR 2013 — Karlsruhe, Germany |
+| Source | Geiger et al., IJRR 2013  Karlsruhe, Germany |
 
 ---
 
 ## Model: YOLO26n
 
-YOLO26n is the nano (smallest and fastest) variant of **YOLO26** — Ultralytics' January 2026 release. It introduces a fully end-to-end, NMS-free architecture: no post-processing step needed, the model outputs clean detections directly.
+YOLO26n is the nano (smallest and fastest) variant of **YOLO26**  Ultralytics' January 2026 release. It introduces a fully end-to-end, NMS-free architecture: no post-processing step needed, the model outputs clean detections directly.
 
 | Property | Value |
 |----------|-------|
@@ -128,11 +128,11 @@ YOLO26n is the nano (smallest and fastest) variant of **YOLO26** — Ultralytics
 | Parameters | 2,506,920 (~2.5M) |
 | GFLOPs | 5.8 |
 | Input size | 640×640 |
-| Output | (1, 300, 6) — NMS-free |
+| Output | (1, 300, 6)  NMS-free |
 | Pretrained on | COCO (80 classes, 330K images) |
 | Fine-tuned on | KITTI (8 classes, 5,985 images) |
 | Optimizer | AdamW (lr=0.000833, momentum=0.9) |
-| Training GPU | Tesla T4 — Google Colab |
+| Training GPU | Tesla T4  Google Colab |
 | Inference speed | ~13 ms/image on T4 |
 
 ---
@@ -143,21 +143,21 @@ YOLO26n is the nano (smallest and fastest) variant of **YOLO26** — Ultralytics
 
 <p align="center">
   <img src="assets/carla/carla_env.png" width="90%" alt="CARLA connection terminal output"/>
-  <br><em>CARLA connected — Town03 loaded with 15 NPC vehicles and 6 pedestrian walkers</em>
+  <br><em>CARLA connected  Town03 loaded with 15 NPC vehicles and 6 pedestrian walkers</em>
 </p>
 
 <p align="center">
   <img src="assets/carla/carla_running.png" width="100%" alt="Live detection window"/>
-  <br><em>Live detection window — ONNX inference running on every camera frame in real time</em>
+  <br><em>Live detection window  ONNX inference running on every camera frame in real time</em>
 </p>
 
 ### Domain Gap
 
-The model was trained on **real KITTI photographs** and tested on **CARLA synthetic renders**. The visual difference between real photos and game-engine images is called the *domain gap*. The model still detects correctly — cars and pedestrians are recognised — but with slightly lower confidence scores than on real KITTI images. This is a known and well-studied challenge in autonomous driving perception.
+The model was trained on **real KITTI photographs** and tested on **CARLA synthetic renders**. The visual difference between real photos and game-engine images is called the *domain gap*. The model still detects correctly  cars and pedestrians are recognised  but with slightly lower confidence scores than on real KITTI images. This is a known and well-studied challenge in autonomous driving perception.
 
 ### Technical Challenge Solved
 
-Modern Ultralytics requires Python 3.8+, but CARLA 0.9.11's API is compiled only for Python 3.7. Solution: export the trained model to **ONNX format (opset 17)** and run inference with `onnxruntime` inside a Python 3.7 environment — no conflicts, full compatibility.
+Modern Ultralytics requires Python 3.8+, but CARLA 0.9.11's API is compiled only for Python 3.7. Solution: export the trained model to **ONNX format (opset 17)** and run inference with `onnxruntime` inside a Python 3.7 environment  no conflicts, full compatibility.
 
 ---
 
@@ -167,7 +167,7 @@ Modern Ultralytics requires Python 3.8+, but CARLA 0.9.11's API is compiled only
 .
 ├── src/
 │   ├── train_kitti_yolo26.py        # Training, evaluation, and ONNX export
-│   └── carla_yolo26_detection.py    # CARLA live detection — ONNX inference, manual driving, recording
+│   └── carla_yolo26_detection.py    # CARLA live detection  ONNX inference, manual driving, recording
 ├── assets/
 │   ├── results/                     # KITTI detection sample images (det1–det6.png)
 │   ├── metrics/                     # Training curves, confusion matrices, class distribution
@@ -186,7 +186,7 @@ Modern Ultralytics requires Python 3.8+, but CARLA 0.9.11's API is compiled only
 # Recommended: Google Colab (free T4 GPU)
 from ultralytics import YOLO
 
-# YOLO26n with COCO pretrained weights — auto-downloads KITTI (390 MB)
+# YOLO26n with COCO pretrained weights  auto-downloads KITTI (390 MB)
 model = YOLO("yolo26n.pt")
 model.train(data="kitti.yaml", epochs=10, imgsz=640)
 ```
@@ -208,11 +208,11 @@ conda create -n carla37 python=3.7 -y
 conda activate carla37
 pip install onnxruntime opencv-python numpy
 
-# Terminal 1 — launch CARLA
+# Terminal 1  launch CARLA
 cd /path/to/carla_0.9.11
 ./CarlaUE4.sh -quality-level=Low
 
-# Terminal 2 — run detection
+# Terminal 2  run detection
 conda activate carla37
 python src/carla_yolo26_detection.py
 ```
