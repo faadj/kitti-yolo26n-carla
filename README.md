@@ -1,5 +1,5 @@
 # Real-Time Object Detection for Autonomous Driving
-### YOLO26n trained on KITTI — deployed live in CARLA simulator
+### YOLO26n trained on KITTI deployed live in CARLA simulator
 
 <p align="center">
   <img src="assets/carla/carla_detection_session2.gif" width="100%" alt="YOLO26n live detection in CARLA Town03"/>
