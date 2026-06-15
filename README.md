@@ -100,10 +100,6 @@ Two key ideas demonstrated here:
 
 ## Dataset: KITTI
 
-<p align="center">
-  <img src="assets/metrics/label_bar_only.png" width="65%" alt="Class distribution"/>
-  <br><em>Annotation count per class  car dominates with 23,026 instances (71% of all annotations)</em>
-</p>
 
 | Property | Value |
 |----------|-------|
